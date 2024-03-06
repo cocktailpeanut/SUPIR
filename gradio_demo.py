@@ -209,6 +209,9 @@ if use_llava:
     css = ""
 else:
     css = """
+#stage1_column {
+  display: none;
+}
 #stage1_run {
   display: none;
 }
@@ -232,7 +235,7 @@ with block:
                 with gr.Column():
                     gr.Markdown("<center>Input</center>")
                     input_image = gr.Image(type="numpy", elem_id="image-input", height=400)
-                with gr.Column():
+                with gr.Column(elem_id='stage1_column'):
                     gr.Markdown("<center>Stage1 Output</center>")
                     denoise_image = gr.Image(type="numpy", elem_id="image-s1", height=400)
             prompt = gr.Textbox(label="Prompt", value="")
