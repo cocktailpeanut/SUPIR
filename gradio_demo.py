@@ -205,7 +205,24 @@ The service is a research preview intended for non-commercial use only, subject 
 """
 
 
-block = gr.Blocks(title='SUPIR').queue()
+if use_llava:
+    css = ""
+else:
+    css = """
+#stage1_run {
+  display: none;
+}
+#llava_run {
+  display: none;
+}
+#stage1_options {
+  display: none;
+}
+#llava_options {
+  display: none;
+}
+    """
+block = gr.Blocks(title='SUPIR', css=css).queue()
 with block:
     with gr.Row():
         gr.Markdown(title_md)
@@ -309,21 +326,4 @@ with block:
                          outputs=[edm_steps, s_cfg, s_stage2, s_stage1, s_churn, s_noise, a_prompt, n_prompt,
                                   color_fix_type, linear_CFG, linear_s_stage2, spt_linear_CFG, spt_linear_s_stage2])
     submit_button.click(fn=submit_feedback, inputs=[event_id, fb_score, fb_text], outputs=[fb_text])
-if use_llava:
-    css = ""
-else:
-    css = """
-#stage1_run {
-  display: none;
-}
-#llava_run {
-  display: none;
-}
-#stage1_options {
-  display: none;
-}
-#llava_options {
-  display: none;
-}
-    """
-block.launch(server_name=server_ip, server_port=server_port, css=css)
+block.launch(server_name=server_ip, server_port=server_port)
