@@ -140,7 +140,10 @@ def stage2_process(input_image, prompt, a_prompt, n_prompt, num_samples, upscale
         Image.fromarray(input_image).save(f'./history/{event_id[:5]}/{event_id[5:]}/LQ.png')
         for i, result in enumerate(results):
             Image.fromarray(result).save(f'./history/{event_id[:5]}/{event_id[5:]}/HQ_{i}.png')
-    return [input_image] + results, event_id, 3, ''
+    if args.use_image_slider:
+        return [input_image] + results, [input_image] + results, event_id, 3, ''
+    else:
+        return [input_image] + results, event_id, 3, ''
 
 
 def load_and_reset(param_setting):
@@ -275,7 +278,10 @@ with block:
             if not args.use_image_slider:
                 result_gallery = gr.Gallery(label='Output', show_label=False, elem_id="gallery1")
             else:
-                result_gallery = ImageSlider(label='Output', show_label=False, elem_id="gallery1")
+                with gr.Row():
+                    result_gallery = ImageSlider(label='Output', show_label=False, elem_id="gallery1")
+                with gr.Row():
+                    result_gallery2 = gr.Gallery(label='Output', show_label=False, elem_id="gallery2")
             with gr.Row():
                 with gr.Column():
                     denoise_button = gr.Button(value="Stage1 Run")
@@ -304,7 +310,10 @@ with block:
     stage2_ips = [input_image, prompt, a_prompt, n_prompt, num_samples, upscale, edm_steps, s_stage1, s_stage2,
                   s_cfg, seed, s_churn, s_noise, color_fix_type, diff_dtype, ae_dtype, gamma_correction,
                   linear_CFG, linear_s_stage2, spt_linear_CFG, spt_linear_s_stage2, model_select]
-    diffusion_button.click(fn=stage2_process, inputs=stage2_ips, outputs=[result_gallery, event_id, fb_score, fb_text])
+    if args.use_image_slider:
+        diffusion_button.click(fn=stage2_process, inputs=stage2_ips, outputs=[result_gallery, result_gallery2, event_id, fb_score, fb_text])
+    else:
+        diffusion_button.click(fn=stage2_process, inputs=stage2_ips, outputs=[result_gallery, event_id, fb_score, fb_text])
     restart_button.click(fn=load_and_reset, inputs=[param_setting],
                          outputs=[edm_steps, s_cfg, s_stage2, s_stage1, s_churn, s_noise, a_prompt, n_prompt,
                                   color_fix_type, linear_CFG, linear_s_stage2, spt_linear_CFG, spt_linear_s_stage2])
