@@ -214,14 +214,14 @@ with block:
             with gr.Row(equal_height=True):
                 with gr.Column():
                     gr.Markdown("<center>Input</center>")
-                    input_image = gr.Image(type="numpy", elem_id="image-input", height=400, width=400)
+                    input_image = gr.Image(type="numpy", elem_id="image-input", height=400)
                 with gr.Column():
                     gr.Markdown("<center>Stage1 Output</center>")
-                    denoise_image = gr.Image(type="numpy", elem_id="image-s1", height=400, width=400)
+                    denoise_image = gr.Image(type="numpy", elem_id="image-s1", height=400)
             prompt = gr.Textbox(label="Prompt", value="")
-            with gr.Accordion("Stage1 options", open=False):
-                gamma_correction = gr.Slider(label="Gamma Correction", minimum=0.1, maximum=2.0, value=1.0, step=0.1)
-            with gr.Accordion("LLaVA options", open=False):
+            with gr.Accordion("Stage1 options", elem_id="stage1_options", open=False):
+                gamma_correction = gr.Slider(label="Gamma Correction", elem_id="gamma_correction_slider", minimum=0.1, maximum=2.0, value=1.0, step=0.1)
+            with gr.Accordion("LLaVA options", elem_id="llava_options", open=False):
                 temperature = gr.Slider(label="Temperature", minimum=0., maximum=1.0, value=0.2, step=0.1)
                 top_p = gr.Slider(label="Top P", minimum=0., maximum=1.0, value=0.7, step=0.1)
                 qs = gr.Textbox(label="Question", value="Describe this image and its style in a very detailed manner. "
@@ -278,9 +278,9 @@ with block:
                 result_gallery = ImageSlider(label='Output', show_label=False, elem_id="gallery1")
             with gr.Row():
                 with gr.Column():
-                    denoise_button = gr.Button(value="Stage1 Run")
+                    denoise_button = gr.Button(value="Stage1 Run", elem_id="stage1_run")
                 with gr.Column():
-                    llave_button = gr.Button(value="LlaVa Run")
+                    llave_button = gr.Button(value="LlaVa Run", elem_id="llava_run")
                 with gr.Column():
                     diffusion_button = gr.Button(value="Stage2 Run")
             with gr.Row():
