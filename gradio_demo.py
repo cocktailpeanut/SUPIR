@@ -246,7 +246,7 @@ with block:
                 top_p = gr.Slider(label="Top P", minimum=0., maximum=1.0, value=0.7, step=0.1)
                 qs = gr.Textbox(label="Question", value="Describe this image and its style in a very detailed manner. "
                                                         "The image is a realistic photography, not an art painting.")
-            with gr.Accordion("Stage2 options", open=False):
+            with gr.Accordion("Stage2 options", open=(not use_llava)):
                 num_samples = gr.Slider(label="Num Samples", minimum=1, maximum=4 if not args.use_image_slider else 1
                                         , value=1, step=1)
                 upscale = gr.Slider(label="Upscale", minimum=1, maximum=8, value=1, step=1)
