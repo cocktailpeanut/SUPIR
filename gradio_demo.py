@@ -132,6 +132,15 @@ def stage2_process(input_image, prompt, a_prompt, n_prompt, num_samples, upscale
         0, 255).astype(np.uint8)
     results = [x_samples[i] for i in range(num_samples)]
 
+    output_files = []
+    os.makedirs(f'../outputs', exist_ok=True)
+
+    for i, result in enumerate(results):
+        timestamp = int(time.time())
+        output_path = f'../outputs/image_{timestamp}.png'
+        Image.fromarray(result).save(output_path)
+        output_files.append(output_path)
+
     if args.log_history:
         os.makedirs(f'./history/{event_id[:5]}/{event_id[5:]}', exist_ok=True)
         with open(f'./history/{event_id[:5]}/{event_id[5:]}/logs.txt', 'w') as f:
@@ -141,9 +150,9 @@ def stage2_process(input_image, prompt, a_prompt, n_prompt, num_samples, upscale
         for i, result in enumerate(results):
             Image.fromarray(result).save(f'./history/{event_id[:5]}/{event_id[5:]}/HQ_{i}.png')
     if args.use_image_slider:
-        return [input_image] + results, [input_image] + results, event_id, 3, ''
+        return [input_image] + results, [input_image] + results, event_id, 3, '', output_files
     else:
-        return [input_image] + results, event_id, 3, ''
+        return [input_image] + results, event_id, 3, '', output_files
 
 
 def load_and_reset(param_setting):
@@ -208,7 +217,7 @@ The service is a research preview intended for non-commercial use only, subject 
 """
 
 
-block = gr.Blocks(title='SUPIR').queue()
+block = gr.Blocks(title='SUPIR', css="#row-height { height: 65px }").queue()
 with block:
     with gr.Row():
         gr.Markdown(title_md)
@@ -282,6 +291,8 @@ with block:
                     result_gallery = ImageSlider(label='Output', show_label=False, elem_id="gallery1")
                 with gr.Row():
                     result_gallery2 = gr.Gallery(label='Output', show_label=False, elem_id="gallery2")
+                with gr.Row():
+                    download_files = gr.File(label="Download Image", file_count="single", elem_id="row-height")
             with gr.Row():
                 with gr.Column():
                     denoise_button = gr.Button(value="Stage1 Run")
@@ -295,7 +306,7 @@ with block:
                                                value="Quality")
                 with gr.Column():
                     restart_button = gr.Button(value="Reset Param", scale=2)
-            with gr.Accordion("Feedback", open=True):
+            with gr.Accordion("Feedback", open=False):
                 fb_score = gr.Slider(label="Feedback Score", minimum=1, maximum=5, value=3, step=1,
                                      interactive=True)
                 fb_text = gr.Textbox(label="Feedback Text", value="", placeholder='Please enter your feedback here.')
@@ -311,9 +322,9 @@ with block:
                   s_cfg, seed, s_churn, s_noise, color_fix_type, diff_dtype, ae_dtype, gamma_correction,
                   linear_CFG, linear_s_stage2, spt_linear_CFG, spt_linear_s_stage2, model_select]
     if args.use_image_slider:
-        diffusion_button.click(fn=stage2_process, inputs=stage2_ips, outputs=[result_gallery, result_gallery2, event_id, fb_score, fb_text])
+        diffusion_button.click(fn=stage2_process, inputs=stage2_ips, outputs=[result_gallery, result_gallery2, event_id, fb_score, fb_text, download_files])
     else:
-        diffusion_button.click(fn=stage2_process, inputs=stage2_ips, outputs=[result_gallery, event_id, fb_score, fb_text])
+        diffusion_button.click(fn=stage2_process, inputs=stage2_ips, outputs=[result_gallery, event_id, fb_score, fb_text, download_files])
     restart_button.click(fn=load_and_reset, inputs=[param_setting],
                          outputs=[edm_steps, s_cfg, s_stage2, s_stage1, s_churn, s_noise, a_prompt, n_prompt,
                                   color_fix_type, linear_CFG, linear_s_stage2, spt_linear_CFG, spt_linear_s_stage2])
