@@ -201,8 +201,6 @@ title_md = """
 # **SUPIR: Practicing Model Scaling for Photo-Realistic Image Restoration**
 
 ⚠️SUPIR is still a research project under tested and is not yet a stable commercial product.
-
-[[Paper](https://arxiv.org/abs/2401.13627)] &emsp; [[Project Page](http://supir.xpixel.group/)] &emsp; [[How to play](https://github.com/Fanghua-Yu/SUPIR/blob/master/assets/DemoGuide.png)]
 """
 
 
@@ -214,6 +212,8 @@ By using this service, users are required to agree to the following terms: The s
 ## **License**
 
 The service is a research preview intended for non-commercial use only, subject to the model [License](https://github.com/Fanghua-Yu/SUPIR) of SUPIR.
+
+[[Paper](https://arxiv.org/abs/2401.13627)] &emsp; [[Project Page](http://supir.xpixel.group/)] &emsp; [[How to play](https://github.com/Fanghua-Yu/SUPIR/blob/master/assets/DemoGuide.png)]
 """
 
 
@@ -226,14 +226,14 @@ with block:
             with gr.Row(equal_height=True):
                 with gr.Column():
                     gr.Markdown("<center>Input</center>")
-                    input_image = gr.Image(type="numpy", elem_id="image-input", height=400, width=400)
+                    input_image = gr.Image(type="numpy", label="Upload Image", elem_id="image-input", height=400, width=400)
                 with gr.Column():
                     gr.Markdown("<center>Stage1 Output</center>")
-                    denoise_image = gr.Image(type="numpy", elem_id="image-s1", height=400, width=400)
+                    denoise_image = gr.Image(type="numpy", label="Image Stage 1", interactive=False, elem_id="image-s1", height=400, width=400)
             prompt = gr.Textbox(label="Prompt", value="")
             with gr.Accordion("Stage1 options", open=False):
                 gamma_correction = gr.Slider(label="Gamma Correction", minimum=0.1, maximum=2.0, value=1.0, step=0.1)
-            with gr.Accordion("LLaVA options", open=False):
+            with gr.Accordion("LLaVA options", open=False, visible=False):
                 temperature = gr.Slider(label="Temperature", minimum=0., maximum=1.0, value=0.2, step=0.1)
                 top_p = gr.Slider(label="Top P", minimum=0., maximum=1.0, value=0.7, step=0.1)
                 qs = gr.Textbox(label="Question", value="Describe this image and its style in a very detailed manner. "
@@ -297,8 +297,6 @@ with block:
                 with gr.Column():
                     denoise_button = gr.Button(value="Stage1 Run")
                 with gr.Column():
-                    llave_button = gr.Button(value="LlaVa Run")
-                with gr.Column():
                     diffusion_button = gr.Button(value="Stage2 Run")
             with gr.Row():
                 with gr.Column():
@@ -306,11 +304,13 @@ with block:
                                                value="Quality")
                 with gr.Column():
                     restart_button = gr.Button(value="Reset Param", scale=2)
-            with gr.Accordion("Feedback", open=False):
+            with gr.Accordion("Feedback", open=False, visible=False):
                 fb_score = gr.Slider(label="Feedback Score", minimum=1, maximum=5, value=3, step=1,
                                      interactive=True)
                 fb_text = gr.Textbox(label="Feedback Text", value="", placeholder='Please enter your feedback here.')
                 submit_button = gr.Button(value="Submit Feedback")
+            with gr.Row():
+                llave_button = gr.Button(value="LlaVa Run", visible=False)
     with gr.Row():
         gr.Markdown(claim_md)
         event_id = gr.Textbox(label="Event ID", value="", visible=False)
